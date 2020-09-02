@@ -167,22 +167,20 @@ void AssignStmt() : { Token t;}
 
 void Expr() : {}
 {
-    BasicExpr()
+    //BasicExpr()
+    LogicExpr()
 }
 
-void BasicExpr() : {}
+void BasicExpr() #void : {}
 {
-	//Identifier() |
-	//IntValue()
+	Identifier() |
+	IntValue() |
+	RealValue()
 	//(MulExpr() | DivExpr() | AddExpr() | SubExpr())*
-	LogicExpr()
+	//LogicExpr()
 }
 
-void Test(): {}
-{
-    Identifier() |
-	IntValue()
-}
+
 
 
 void Identifier() : { Token t;}
@@ -237,9 +235,13 @@ void ForStmt(): {}
 }
 
 // 2.4 TODO: Figure out how to implement negation (-) not (!) and parenthesis
-void NegationExpr(): {}
+void NegationExpr() # void: {}
 {
-    (Identifier() | IntValue() | RealValue())
+    BasicExpr()
+
+    //((<MINUS>#Negation)*)
+
+
 
     //((LOOKAHEAD(2) <MINUS> (Identifier() | IntValue()))*)#Negation(>1)
     //(((<MINUS>#Negation)*) (Identifier() | IntValue()))
@@ -253,6 +255,7 @@ void NegationExpr(): {}
 
 void MulDivExpr() #void: {}
 {
+    //((Identifier() | IntValue() | RealValue()) ((<DIV> | <FOIS>) (Identifier() | IntValue() | RealValue()))*)#Multiplication(>1)
     (NegationExpr() ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
     //NegationExpr() ((Identifier() | IntValue()) ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
 
@@ -263,11 +266,6 @@ void MulDivExpr() #void: {}
 void AddSubExpr() #void : {}
 {
     (MulDivExpr() ((<PLUS> | <MINUS>) MulDivExpr())*)#Addition(>1)
-    //MulDivExpr() (((<PLUS> | <MINUS>) MulDivExpr())*)#Addition(>0)
-
-    /*(((MulDivExpr() (<PLUS> MulDivExpr())*)#Addition(>1))
-    |
-    ((MulDivExpr() (<MINUS> MulDivExpr())*)#Soustraction(>1)))*/
 }
 
 
