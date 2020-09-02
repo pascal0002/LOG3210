@@ -235,9 +235,15 @@ void ForStmt(): {}
 }
 
 // 2.4 TODO: Figure out how to implement negation (-) not (!) and parenthesis
-void NegationExpr() # void: {}
+void NotExpr() # void: {}
 {
-    BasicExpr()
+    (<NOT>)*
+}
+
+void NegationExpr() #void: {}
+{
+    // TODO: Why doesnt it print Negation?
+    (NotExpr() ((<MINUS>)*) BasicExpr())#Negation(>1)
 
     //((<MINUS>#Negation)*)
 
