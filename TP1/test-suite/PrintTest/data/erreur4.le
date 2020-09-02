@@ -1,0 +1,5 @@
+// Error test for switch statement
+
+switch i == 0 {
+    case 0: a = 0;
+}

@@ -1,0 +1,4 @@
+// Tests on if statement
+
+if (1)
+    a = 0;

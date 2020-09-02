@@ -1,0 +1,4 @@
+switch (0) {
+    case 0 : a=1;
+    case 1 : a = 0;
+}

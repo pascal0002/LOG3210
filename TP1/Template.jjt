@@ -1,0 +1,282 @@
+options {
+	JAVA_UNICODE_ESCAPE=true;
+	STATIC=false;					// 1 seul parseur actif a la fois (+ rapide)
+	MULTI=true;						// type noeud = f(nom noeud)
+	VISITOR=true;					// Cree une methode accept(visiteur)
+}
+
+//
+// PARSER DEFINITION
+//
+
+PARSER_BEGIN(Parser)
+
+package analyzer.ast;
+
+public class Parser
+{
+	public static ASTProgram ParseTree(java.io.InputStream input) throws ParseException
+	{
+		Parser c = new Parser(input);
+		return c.Program();
+	}
+}
+
+PARSER_END(Parser)
+
+//
+// LEXICAL ANALYSIS
+//
+
+// White space
+
+SKIP :
+{
+	< ( " " | "\t" | "\n" | "\r" )+	>
+}
+
+// Comments
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+|
+  <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+|
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+
+// Keywords
+TOKEN :
+{
+	< IF: "if"	> |
+	< ELSE: "else" > |
+	< STRING: "string"> |
+	< INT: "int"> |
+	< FLOAT: "float" > |
+	< BOOL: "bool"> |
+	< PRINT: "print" > |
+	< INPUT: "input" > |
+	< IN: "in" > |
+	// À compléter au besoin
+	< WHILE: "while"> |
+	< DO: "do"> |
+	< FOR: "for">
+}
+
+// Operators
+TOKEN :
+{
+	< ASSIGN: < EQUAL >  > |
+	< COMPARE: < LESS > | < LESSEQUAL > | < GREAT > | <GREATEQUAL > | < DIFF > | < EQUALEQUAL > > |
+    < LOGIC: < AND > | < OR > > |
+	< #LESS: "<" > |
+	< #LESSEQUAL: "<=" > |
+	< #GREAT: ">" > |
+	< #GREATEQUAL: ">=" > |
+	< #DIFF: "!=" > |
+	< #EQUALEQUAL: "==" > |
+
+	< PLUS: "+" > |
+	< MINUS: "-" > |
+	< FOIS: "*" > |
+	< DIV: "/" > |
+    < NOT: "!" > |
+
+	< #EQUAL: "=" > |
+	< LPAREN: "(" > |
+	< RPAREN: ")" > |
+	< LACC: "{" > |
+	< RACC: "}" > |
+	< COLON: ":" > |
+	< SEMICOLON: ";" > |
+	< COMMA: "," > |
+	< #AND: "&&" > |
+	< #OR: "||" >
+	// À compléter au besoin
+}
+
+
+// Identifiers and numbers
+TOKEN :
+{
+	< IDENTIFIER: <LETTER> ( <LETTER> | <DIGIT> )* > |
+	< #LETTER: ["a"-"z","A"-"Z","_"] > |
+	< #DIGIT: ["0"-"9"] > |
+	< INTEGER: ["1"-"9"] (["0"-"9"])* | "0" > |
+
+	// 2.5 TODO: Check test exemple_real_8 once negation is implemented
+	< EXPONENT: "e+" | "E+" > |
+	< REAL: (<INTEGER>)? "." (<INTEGER>)? (<EXPONENT> <INTEGER>)?>
+
+}
+
+
+//
+// SYNTAX ANALYSIS
+//
+
+ASTProgram Program() : { }
+{
+	Block() <EOF> { return jjtThis;  }
+}
+
+void Block() : { }
+{
+	 ( Stmt() )*
+}
+
+void Stmt() : { }
+{
+	AssignStmt() <SEMICOLON> |
+    WhileStmt() |
+    DoWhileStmt() <SEMICOLON> |
+    IfStmt() |
+    ForStmt()
+}
+
+void AssignStmt() : { Token t;}
+{
+	Identifier() <ASSIGN> Expr()
+}
+
+void Expr() : {}
+{
+    BasicExpr()
+}
+
+void BasicExpr() : {}
+{
+	//Identifier() |
+	//IntValue()
+	//(MulExpr() | DivExpr() | AddExpr() | SubExpr())*
+	LogicExpr()
+}
+
+void Test(): {}
+{
+    Identifier() |
+	IntValue()
+}
+
+
+void Identifier() : { Token t;}
+{
+	t = <IDENTIFIER> {jjtThis.setValue(t.image);}
+}
+
+void IntValue() : { Token t;}
+{
+	t = <INTEGER> {jjtThis.setValue(Integer.parseInt(t.image));}
+}
+
+void RealValue() : { Token t;}
+{
+	t = <REAL> {jjtThis.setValue(Double.parseDouble(t.image));}
+}
+
+
+// 2.1
+void WhileStmt() : { Token t; }
+{
+    <WHILE> <LPAREN> Expr() <RPAREN>
+    (<LACC> Block() <RACC>
+    |
+    Stmt())
+}
+
+void DoWhileStmt() : { Token t; }
+{
+    <DO> <LACC>
+    Block()
+    <RACC> <WHILE> <LPAREN> Expr() <RPAREN>
+}
+
+// 2.2
+void IfStmt(): {}
+{
+    <IF> <LPAREN> Expr() <RPAREN>
+    (<LACC> Block() <RACC>
+    |
+    Stmt())
+    [LOOKAHEAD(2) <ELSE> (<LACC> Block() <RACC> | Stmt())]
+}
+
+// 2.3
+void ForStmt(): {}
+{
+    <FOR> <LPAREN> [AssignStmt()] <SEMICOLON> Expr() <SEMICOLON> [AssignStmt()] <RPAREN>
+    (<LACC> Block() <RACC>
+    |
+    Stmt())
+}
+
+// 2.4 TODO: Figure out how to implement negation (-) not (!) and parenthesis
+void NegationExpr(): {}
+{
+    (Identifier() | IntValue() | RealValue())
+
+    //((LOOKAHEAD(2) <MINUS> (Identifier() | IntValue()))*)#Negation(>1)
+    //(((<MINUS>#Negation)*) (Identifier() | IntValue()))
+
+    //((<MINUS>)* (Identifier() | IntValue()))#Negation(>1)
+
+    //((LOOKAHEAD(2) <MINUS> (Identifier() | IntValue()))*)#Negation(>0)
+    //((LOOKAHEAD(2) <MINUS> (Identifier() | IntValue()))*)#Negation(>0)
+    //((Identifier() | IntValue()) ((<DIV> | <FOIS>) (Identifier() | IntValue()))*)#Negation(>1)
+}
+
+void MulDivExpr() #void: {}
+{
+    (NegationExpr() ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
+    //NegationExpr() ((Identifier() | IntValue()) ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
+
+    //(NegationExpr() ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
+    //((Identifier() | IntValue()) ((<DIV> | <FOIS>) (Identifier() | IntValue()))*)#Multiplication(>1)
+}
+
+void AddSubExpr() #void : {}
+{
+    (MulDivExpr() ((<PLUS> | <MINUS>) MulDivExpr())*)#Addition(>1)
+    //MulDivExpr() (((<PLUS> | <MINUS>) MulDivExpr())*)#Addition(>0)
+
+    /*(((MulDivExpr() (<PLUS> MulDivExpr())*)#Addition(>1))
+    |
+    ((MulDivExpr() (<MINUS> MulDivExpr())*)#Soustraction(>1)))*/
+}
+
+
+void CompareExpr() #void: {}
+{
+    (AddSubExpr() (<COMPARE> AddSubExpr())*)#Comparison(>1)
+}
+
+void LogicExpr() #void: {}
+{
+    (CompareExpr() (<LOGIC> CompareExpr())*)#LogicExpression(>1)
+}

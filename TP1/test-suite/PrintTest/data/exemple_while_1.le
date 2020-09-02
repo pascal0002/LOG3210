@@ -1,0 +1,3 @@
+// Tests on while and do-while statement
+while (1)
+    a = 4;

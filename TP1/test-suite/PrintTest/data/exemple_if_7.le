@@ -1,0 +1,11 @@
+// Tests on if statement
+
+if (0) 
+    a = 0;
+else if (1) {
+    a = 1;
+}
+else {
+    a = 2;
+    b = 2;
+}

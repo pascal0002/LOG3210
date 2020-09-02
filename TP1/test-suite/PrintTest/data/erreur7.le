@@ -1,0 +1,6 @@
+// Error test for do-while statement
+
+// missing ";"
+do {
+    a=0;
+} while (a==1)

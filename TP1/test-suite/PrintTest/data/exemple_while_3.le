@@ -1,0 +1,4 @@
+// Tests on while and do-while statement
+do {
+    a = 4;
+} while (1) ;
