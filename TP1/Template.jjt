@@ -192,7 +192,6 @@ void RealValue() : { Token t;}
 	t = <REAL> {jjtThis.setValue(Double.parseDouble(t.image));}
 }
 
-
 // 2.1
 void WhileStmt() : { Token t; }
 {
@@ -228,7 +227,7 @@ void ForStmt(): {}
     Stmt())
 }
 
-// 2.4 TODO: Figure out how to implement not (!) and parenthesis
+// 2.4
 void ParenthesisExpr() #void: {}
 {
     <LPAREN> LogicExpr()#Parentheses <RPAREN> |
