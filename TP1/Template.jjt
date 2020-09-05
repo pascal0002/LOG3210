@@ -259,25 +259,34 @@ void NegationExpr() #void: {}
     //((Identifier() | IntValue()) ((<DIV> | <FOIS>) (Identifier() | IntValue()))*)#Negation(>1)
 }
 
-void MulDivExpr() #void: {}
+void MulExpr() #void: {}
 {
     //((Identifier() | IntValue() | RealValue()) ((<DIV> | <FOIS>) (Identifier() | IntValue() | RealValue()))*)#Multiplication(>1)
-    (NegationExpr() ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
+    (NegationExpr() (<FOIS> NegationExpr())*)#Multiplication(>1)
     //NegationExpr() ((Identifier() | IntValue()) ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
 
     //(NegationExpr() ((<DIV> | <FOIS>) NegationExpr())*)#Multiplication(>1)
     //((Identifier() | IntValue()) ((<DIV> | <FOIS>) (Identifier() | IntValue()))*)#Multiplication(>1)
 }
 
-void AddSubExpr() #void : {}
+void DivExpr() #void: {}
 {
-    (MulDivExpr() ((<PLUS> | <MINUS>) MulDivExpr())*)#Addition(>1)
+    (MulExpr() (<DIV> MulExpr())*)#Division(>1)
 }
 
+void AddExpr() #void : {}
+{
+    (DivExpr() (<PLUS> DivExpr())*)#Addition(>1)
+}
+
+void SubExpr() #void : {}
+{
+    (AddExpr() (<MINUS> AddExpr())*)#Soustraction(>1)
+}
 
 void CompareExpr() #void: {}
 {
-    (AddSubExpr() (<COMPARE> AddSubExpr())*)#Comparison(>1)
+    (SubExpr() (<COMPARE> SubExpr())*)#Comparison(>1)
 }
 
 void LogicExpr() #void: {}
