@@ -222,23 +222,29 @@ void IfStmt(): {}
 // 2.3
 void ForStmt(): {}
 {
-    <FOR> <LPAREN> [AssignStmt()] <SEMICOLON> Expr() <SEMICOLON> [AssignStmt()] <RPAREN>
+    <FOR> <LPAREN> [AssignStmt()] <SEMICOLON> [Expr()] <SEMICOLON> [AssignStmt()] <RPAREN>
     (<LACC> Block() <RACC>
     |
     Stmt())
 }
 
 // 2.4 TODO: Figure out how to implement not (!) and parenthesis
-void NotExpr() # void: {}
+void ParenthesisExpr() #void: {}
 {
-    // TODO
-    (<NOT>)*
+    <LPAREN> LogicExpr()#Parentheses <RPAREN> |
+    BasicExpr()
+}
+
+void NotExpr() #void: {}
+{
+    ParenthesisExpr() |
+    <NOT> NotExpr()#Not
 }
 
 void NegationExpr() #void: {}
 {
-    <MINUS> NegationExpr()#Negation |
-    BasicExpr()
+    NotExpr() |
+    <MINUS> NegationExpr()#Negation
 }
 
 void MulExpr() #void: {}
