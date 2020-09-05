@@ -165,7 +165,7 @@ void AssignStmt() : { Token t;}
 	Identifier() <ASSIGN> Expr()
 }
 
-void Expr() : {}
+void Expr() #void : {}
 {
     LogicExpr()
 }
