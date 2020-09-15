@@ -1,0 +1,10 @@
+Declaration
+num a;
+bool b;
+EndDeclaration
+
+
+// erreur operandes
+a = 1;
+
+b = a || true;

@@ -1,0 +1,8 @@
+Declaration
+num a;
+num b;
+bool c;
+bool d;
+num e;
+bool b;
+EndDeclaration

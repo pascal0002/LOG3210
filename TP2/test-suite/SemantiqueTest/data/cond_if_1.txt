@@ -1,0 +1,12 @@
+Declaration
+num a;
+
+EndDeclaration
+
+
+if (1+ 1) {
+  a = 1;
+}
+else {
+  a = 2;
+}

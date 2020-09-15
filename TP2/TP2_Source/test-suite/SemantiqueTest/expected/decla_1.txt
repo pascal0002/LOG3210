@@ -1,0 +1,1 @@
+Identifier a has multiple declarations

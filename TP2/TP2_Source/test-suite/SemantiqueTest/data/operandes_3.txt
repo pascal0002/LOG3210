@@ -1,0 +1,6 @@
+Declaration
+bool a;
+EndDeclaration
+
+// erreur operandes
+a = true < false;

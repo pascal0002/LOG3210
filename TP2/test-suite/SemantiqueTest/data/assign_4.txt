@@ -1,0 +1,9 @@
+Declaration
+bool a;
+bool b;
+num c;
+EndDeclaration
+
+c = 10;
+a = c - 4;
+b = b != false;

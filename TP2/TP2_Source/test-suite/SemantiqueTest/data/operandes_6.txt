@@ -1,0 +1,7 @@
+Declaration
+bool a;
+num b;
+EndDeclaration
+
+// erreur operandes
+a = 1 != false;

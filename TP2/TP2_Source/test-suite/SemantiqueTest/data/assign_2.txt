@@ -1,0 +1,7 @@
+Declaration
+bool a;
+bool b;
+EndDeclaration
+
+a = 1 * 2 + 3 / 4;
+b = true==false;

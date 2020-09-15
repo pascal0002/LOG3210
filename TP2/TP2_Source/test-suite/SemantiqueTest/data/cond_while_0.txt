@@ -1,0 +1,9 @@
+Declaration
+num a;
+EndDeclaration
+
+while (3) {
+  a = 1 ;
+}
+
+  
