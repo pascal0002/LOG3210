@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+/**
+ * Created: 17-08-09
+ * Last Changed: 17-08-09
+ * Author: Nicolas Cloutier
+ *
+ * Description: This is an Ant build file managing different commands.
+ * It has the following commands:
+ *  * all           : Execute all the other folders
+ *  * clean         : Remove all the generated files
+ *  * pre-compile   : Parse the jjt file and generate java files (.java)
+ *  * full-compile  : Compile all the .java files
+ *  * test          : Execute the test suite
+ *
+ *  all, full-compile and test are only used from the command line. You can use the makefile to call them.
+ */
+-->
+
+<project name="Langage" default="test">
+
+    <!-- External libraries, you may have to edit these values -->
+    <!-- Theses values are set in the target compute-idea-lib-folder -->
+    <!-- <property name="intellij-lib-folder" value="" />
+    <property name="junit-jar" value="" />
+    <property name="hamcrest-jar" value="" /> -->
+
+    <!-- JavaCC library, you may have to edit these values -->
+    <property name="javacc-folder" value="./libs/javacc-7.0.2/bin/lib" />
+    <property name="javacc-jar" value="${javacc-folder}/javacc.jar" />
+
+    <!-- The different sources code folders -->
+    <property name="src-folder" value="./src" />
+    <property name="test-src-folder" value="./test" />
+    <property name="ast-folder" value="${src-folder}/analyzer/ast" />
+    <property name="gen-folder" value="./gen-src/analyzer/ast" />
+
+    <!-- The different output folders -->
+    <property name="out-folder" value="./out/production/${ant.project.name}/" />
+    <property name="test-out-folder" value="./out/test/${ant.project.name}/" />
+    <property name="test-result-folder" value="./test-suite/" />
+
+    <!-- The grammar file used to generate the parser -->
+    <property name="parser-file" value="${ant.project.name}.jj" />
+    <property name="parser-file-t" value="${ant.project.name}.jjt" />
+
+    <!-- The target to compile & test the parser, it will clean before -->
+    <target name="all" depends="">
+        <antcall target="full-compile" />
+        <antcall target="test" />
+    </target>
+
+    <target name="compute-idea-lib-folder" depends="">
+        <!-- find the executable -->
+        <exec executable="which" outputproperty="intellij-exe-path">
+            <arg value="idea.sh"/>
+        </exec>
+
+        <!-- Get the correct parent subfolders -->
+        <dirname property="intellij-bin-folder" file="${intellij-exe-path}"/>
+        <dirname property="intellij-folder" file="${intellij-bin-folder}"/>
+
+        <!-- Set the properties for the libs -->
+        <property name="intellij-lib-folder" value="${intellij-folder}/lib"/>
+        <property name="junit-jar" value="${intellij-lib-folder}/junit-4.12.jar" />
+        <property name="hamcrest-jar" value="${intellij-lib-folder}/hamcrest-core-1.3.jar" />
+    </target>
+
+    <!-- The target used to generate the parser, it will translate the JavaCC files in
+         correct Java code. You may need to execute this for the IDE to stop showing errors.
+         In the current Intellij project, this target is executed before each compilation. -->
+    <target name="pre-compile" depends="clean">
+
+        <!-- First force a clean (depends) -->
+
+        <!-- Generate the JavaCC files in the gen folder -->
+        <copy file="${parser-file-t}" todir="${gen-folder}" />
+
+        <jjtree
+                target="${parser-file-t}"
+                javacchome="${javacc-folder}"
+                outputdirectory="${gen-folder}"/>
+
+        <javacc
+                target="${gen-folder}/${parser-file}"
+                javacchome="${javacc-folder}"
+                outputdirectory="${gen-folder}"/>
+
+        <!-- Delete the unused files -->
+        <delete file="${gen-folder}/${parser-file}" />
+        <delete file="${gen-folder}/${parser-file-t}" />
+
+        <!-- Delete the files in the gen folder which are present in the src folder -->
+        <delete>
+            <fileset dir="${gen-folder}" casesensitive="yes">
+                <present present="both" targetdir="${ast-folder}" />
+            </fileset>
+        </delete>
+    </target>
+
+    <!-- This target correctly compile all the java code. It is unused in Intellij,
+        but mandatory if you use the command line. -->
+    <target name="full-compile" depends="pre-compile,compute-idea-lib-folder">
+
+        <!-- Generate the project. -->
+        <mkdir dir="${out-folder}" />
+        <javac
+            includeantruntime="false"
+            destdir="${out-folder}" >
+            <src path="${src-folder}" />
+            <src path="${gen-folder}" />
+        </javac>
+
+        <!-- Generate the tests. -->
+        <mkdir dir="${test-out-folder}" />
+        <javac
+            includeantruntime="false"
+            destdir="${test-out-folder}" >
+            <src path="${test-src-folder}" />
+            <classpath>
+                <pathelement location="${out-folder}" />
+                <pathelement path="${junit-jar}" />
+                <pathelement path="${hamcrest-jar}" />
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- This target will use the entry point TestRunner to execute all the tests.
+        On Intellij, you can simply right click the green folders and press
+        "Run All Tests" to do the same. -->
+    <target name="test" depends="compute-idea-lib-folder">
+        <!-- Find the results folders -->
+        <pathconvert property="results-folder" pathsep=" ">
+            <dirset dir="${test-result-folder}">
+                <include name="*" />
+            </dirset>
+            <globmapper from="*" to="*/result"/>
+        </pathconvert>
+
+        <!-- Create them if needed -->
+        <exec executable="mkdir">
+            <arg line="-p ${results-folder}"/>
+        </exec>
+
+        <!-- Execute the tests -->
+        <java classname="analyzer.TestRunner">
+            <classpath>
+                <pathelement location="${out-folder}" />
+                <pathelement location="${test-out-folder}" />
+                <pathelement path="${junit-jar}" />
+                <pathelement path="${hamcrest-jar}" />
+            </classpath>
+        </java>
+    </target>
+
+    <!-- This target will delete all the unused files, please use this before
+        a commit to git. -->
+    <target name="clean" depends="">
+        <delete dir="${gen-folder}" />
+        <delete dir="${out-folder}" />
+        <delete dir="${test-out-folder}" />
+        <delete>
+            <fileset dir="${test-result-folder}" includes="**/**/result/**"/>
+        </delete>
+    </target>
+</project>

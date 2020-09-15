@@ -1,0 +1,5 @@
+Declaration
+num a;
+bool b;
+num a;
+EndDeclaration

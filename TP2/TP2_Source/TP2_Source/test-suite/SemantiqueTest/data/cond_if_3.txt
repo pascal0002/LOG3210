@@ -1,0 +1,9 @@
+Declaration
+num a;
+num b;
+EndDeclaration
+
+
+if (a * 5) {
+  b = a;
+}

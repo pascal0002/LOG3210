@@ -1,0 +1,6 @@
+Declaration
+num a;
+EndDeclaration
+
+// erreur operandes
+a = true + 2;

@@ -1,0 +1,13 @@
+Declaration
+num a;
+bool b;
+EndDeclaration
+
+a = 1;
+
+if (true) {
+  b = a < 1;
+}
+else {
+  b = a > 1;
+}

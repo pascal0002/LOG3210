@@ -1,0 +1,7 @@
+Declaration
+num a;
+num b;
+EndDeclaration
+
+a = 1;
+b = true;

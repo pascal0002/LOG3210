@@ -1,0 +1,9 @@
+Declaration
+num a;
+
+EndDeclaration
+
+
+if (1) {
+  a = 1;
+}

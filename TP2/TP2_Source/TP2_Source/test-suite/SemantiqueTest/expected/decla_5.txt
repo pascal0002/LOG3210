@@ -1,0 +1,1 @@
+Identifier c has multiple declarations

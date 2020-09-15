@@ -1,0 +1,10 @@
+Declaration
+num a;
+num b;
+EndDeclaration
+
+while (b) {
+  a = 1 ;
+}
+
+  
