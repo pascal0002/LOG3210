@@ -1,7 +1,0 @@
-Declaration
-bool a;
-bool b;
-EndDeclaration
-
-a = -4; 
-b = a < 3;

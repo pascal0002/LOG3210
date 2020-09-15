@@ -1,5 +1,0 @@
-Declaration
-num a;
-EndDeclaration
-
-a = 1 + 1;

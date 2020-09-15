@@ -1,9 +1,0 @@
-Declaration
-num a;
-num b;
-bool c;
-bool d;
-num e;
-bool c;
-num d;
-EndDeclaration

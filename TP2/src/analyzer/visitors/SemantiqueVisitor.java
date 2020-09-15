@@ -68,6 +68,7 @@ public class SemantiqueVisitor implements ParserVisitor {
      */
     @Override
     public Object visit(ASTDeclaration node, Object data) {
+        this.VAR++;
         String varName = ((ASTIdentifier) node.jjtGetChild(0)).getValue();
 
         SymbolTable.put(varName, node.getValue().equals("num") ? VarType.Number : VarType.Bool);
@@ -103,6 +104,7 @@ public class SemantiqueVisitor implements ParserVisitor {
      */
     @Override
     public Object visit(ASTIfStmt node, Object data) {
+        this.IF++;
         DataStruct d = new DataStruct();
         node.jjtGetChild(0).jjtAccept(this, d);
         int numChildren = node.jjtGetNumChildren();
@@ -114,6 +116,7 @@ public class SemantiqueVisitor implements ParserVisitor {
 
     @Override
     public Object visit(ASTWhileStmt node, Object data) {
+        this.WHILE++;
         DataStruct d = new DataStruct();
         node.jjtGetChild(0).jjtAccept(this, d);
         int numChildren = node.jjtGetNumChildren();
@@ -138,6 +141,7 @@ public class SemantiqueVisitor implements ParserVisitor {
     @Override
     public Object visit(ASTExpr node, Object data) {
         //Il est normal que tous les noeuds jusqu'à expr retourne un type.
+        this.OP++;
         node.childrenAccept(this, data);
         return null;
     }

@@ -1,4 +1,0 @@
-Declaration
-num a;
-num a;
-EndDeclaration
