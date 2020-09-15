@@ -211,10 +211,7 @@ void DoWhileStmt() : { Token t; }
 // 2.2
 void IfStmt(): {}
 {
-    <IF> <LPAREN> Expr() <RPAREN>
-    (<LACC> Block() <RACC>
-    |
-    Stmt())
+    <IF> <LPAREN> Expr() <RPAREN> (<LACC> Block() <RACC> | Stmt())
     [LOOKAHEAD(2) <ELSE> (<LACC> Block() <RACC> | Stmt())]
 }
 
