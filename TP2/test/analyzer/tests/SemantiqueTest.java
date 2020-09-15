@@ -14,9 +14,11 @@ import analyzer.ast.ParserVisitor;
 public class SemantiqueTest extends BaseTest {
 
     private static String m_test_suite_path = "./test-suite/SemantiqueTest/data";
+    private File m_file;
 
     public SemantiqueTest(File file) {
         super(file);
+        this.m_file = file;
     }
 
     @Test
