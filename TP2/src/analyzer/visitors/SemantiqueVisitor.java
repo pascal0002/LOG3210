@@ -109,9 +109,17 @@ public class SemantiqueVisitor implements ParserVisitor {
         this.IF++;
         DataStruct d = new DataStruct();
         node.jjtGetChild(0).jjtAccept(this, d);
+        if (((DataStruct)d).type != VarType.Bool) {
+            throw new SemantiqueError(String.format("Invalid type in condition."));
+        }
         int numChildren = node.jjtGetNumChildren();
         for (int i = 1; i < numChildren; i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+            Node child = node.jjtGetChild(i);
+            child.jjtAccept(this, data);
+            if (data == null) {
+                data = new DataStruct();
+                ((DataStruct)data).type = d.type;
+            }
         }
         return null;
     }
@@ -121,9 +129,17 @@ public class SemantiqueVisitor implements ParserVisitor {
         this.WHILE++;
         DataStruct d = new DataStruct();
         node.jjtGetChild(0).jjtAccept(this, d);
+        if (d.type != VarType.Bool) {
+            throw new SemantiqueError(String.format("Invalid type in condition."));
+        }
         int numChildren = node.jjtGetNumChildren();
         for (int i = 1; i < numChildren; i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+            Node child = node.jjtGetChild(i);
+            if (data == null) {
+                data = new DataStruct();
+                ((DataStruct)data).type = d.type;
+            }
+            node.childrenAccept(this, data);
         }
         return null;
     }
