@@ -1,0 +1,9 @@
+Declaration
+num a;
+num b;
+num c;
+EndDeclaration
+
+a = 1;
+b = 2;
+c = 3;

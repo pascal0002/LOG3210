@@ -1,0 +1,15 @@
+Declaration
+num a;
+bool b;
+num c;
+EndDeclaration
+
+
+a = 42;
+if(b) {
+  a = a + 100;
+}
+else {
+  a = a - 100;
+}
+c = 1 + 2;

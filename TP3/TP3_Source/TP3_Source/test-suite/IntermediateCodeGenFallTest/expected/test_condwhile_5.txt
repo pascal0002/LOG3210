@@ -1,0 +1,13 @@
+d = 1
+_L1
+_L2
+ifFalse b == 1 goto _L0
+_t0 = d + 1
+d = _t0
+_L3
+_L4
+ifFalse c == 1 goto _L2
+a = 42
+goto _L4
+goto _L2
+_L0

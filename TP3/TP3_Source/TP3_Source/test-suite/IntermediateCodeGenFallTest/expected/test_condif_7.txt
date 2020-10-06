@@ -1,0 +1,23 @@
+ifFalse b == 1 goto _L1
+ifFalse d == 1 goto _L1
+a = 42
+_L2
+if d == 1 goto _L5
+goto _L4
+_L5
+_t0 = a + 100
+a = _t0
+goto _L3
+_L4
+_t1 = a - 100
+a = _t1
+_L3
+_t2 = 1 + 2
+c = _t2
+goto _L0
+_L1
+a = 3210
+_L6
+_t3 = a * 4
+c = _t3
+_L0

@@ -1,0 +1,11 @@
+goto _L2
+a = 1
+goto _L1
+_L2
+a = 0
+_L1
+b = 1
+goto _L0
+_L3
+b = 0
+_L0

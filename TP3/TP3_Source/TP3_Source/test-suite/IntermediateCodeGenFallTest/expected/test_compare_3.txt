@@ -1,0 +1,7 @@
+_t0 = - c
+ifFalse b >= _t0 goto _L1
+a = 1
+goto _L0
+_L1
+a = 0
+_L0

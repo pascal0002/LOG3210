@@ -1,0 +1,22 @@
+goto _L3
+_L2
+a = 1
+goto _L1
+_L3
+a = 0
+_L1
+goto _L5
+_L5
+a = 1
+goto _L4
+_L6
+a = 0
+_L4
+if b == 1 goto _L8
+goto _L7
+_L7
+a = 1
+goto _L0
+_L8
+a = 0
+_L0

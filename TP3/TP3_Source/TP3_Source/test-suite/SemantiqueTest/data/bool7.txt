@@ -1,0 +1,16 @@
+Declaration
+bool a;
+bool b;
+bool c;
+bool d;
+bool e;
+bool f;
+EndDeclaration
+//expression avec des comparaison
+
+a = true;
+b = false;
+c = true || false;
+d = false || true;
+e = true && false;
+f = false && true;

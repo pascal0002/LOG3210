@@ -1,0 +1,9 @@
+_L1
+ifFalse 1 >= a goto _L0
+a = 42
+_L2
+_t1 = 1 / 3
+_t0 = _t1 + 5
+b = _t0
+goto _L1
+_L0

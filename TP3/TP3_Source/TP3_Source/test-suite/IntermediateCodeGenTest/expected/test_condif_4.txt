@@ -1,0 +1,15 @@
+if 1 > a goto _L1
+goto _L2
+_L1
+a = 123
+goto _L0
+_L2
+a = 789
+_L3
+goto _L5
+_L4
+c = 1
+goto _L0
+_L5
+c = 0
+_L0

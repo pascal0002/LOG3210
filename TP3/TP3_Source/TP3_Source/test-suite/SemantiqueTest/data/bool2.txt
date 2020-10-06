@@ -1,0 +1,11 @@
+Declaration
+bool a;
+bool b;
+bool c;
+EndDeclaration
+
+a = false || true;
+
+b = true || a;
+
+c = a && b;

@@ -1,0 +1,7 @@
+Declaration
+bool a;
+bool b;
+EndDeclaration
+
+a = true || false;
+b = true || true;

@@ -1,0 +1,15 @@
+Declaration
+num a;
+bool b;
+bool c;
+num d;
+EndDeclaration
+
+d = 1;
+while(b) {
+  d = d + 1;
+  while(c && true) {
+    a = 42;
+  }
+}
+  

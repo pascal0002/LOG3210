@@ -1,0 +1,7 @@
+ifFalse a > 3 goto _L1
+a = 1234
+goto _L0
+_L1
+ifFalse b == 1 goto _L0
+a = 5678
+_L0

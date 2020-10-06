@@ -1,0 +1,7 @@
+Declaration
+bool a;
+EndDeclaration
+//expression avec des comparaisons
+
+
+a = 3 > 2;

@@ -1,0 +1,8 @@
+Declaration
+bool a;
+bool b;
+bool c;
+bool d;
+EndDeclaration
+
+a = b && c || d;

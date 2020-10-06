@@ -1,0 +1,7 @@
+goto _L1
+_L2
+a = 0
+goto _L0
+_L1
+if b == 0 goto _L2
+_L0

@@ -1,0 +1,10 @@
+Declaration
+bool a;
+bool b;
+bool c;
+EndDeclaration
+//expression avec des comparaisons
+
+a = 5 == 2 + 3;
+b = 1 == 2;
+c = a == b;

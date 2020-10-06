@@ -1,0 +1,5 @@
+Declaration
+bool a;
+EndDeclaration
+
+a = 1 == 2;

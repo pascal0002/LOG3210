@@ -1,0 +1,6 @@
+Declaration
+bool a;
+bool b;
+EndDeclaration
+
+a = b;

@@ -1,0 +1,9 @@
+Declaration
+num a;
+num b;
+
+EndDeclaration
+
+a = 1 + 2;
+
+b = a * -1;

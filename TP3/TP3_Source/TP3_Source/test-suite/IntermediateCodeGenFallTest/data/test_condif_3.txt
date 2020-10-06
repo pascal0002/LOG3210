@@ -1,0 +1,16 @@
+Declaration
+num a;
+bool b;
+bool c;
+EndDeclaration
+
+if(a > 3) {
+  a = 1234;
+}
+else{
+  if(b) {
+    a = 5678;
+  }
+}
+
+  

@@ -1,0 +1,4 @@
+ifFalse b == 1 goto _L0
+ifFalse c == 1 goto _L0
+a = 42
+_L0

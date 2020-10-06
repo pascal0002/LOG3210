@@ -1,0 +1,10 @@
+Declaration
+ num a;
+EndDeclaration
+
+if(false || a > 5) {
+    a = 1;
+    if(a < 5) {} else {
+       a = a + 1;
+    }
+}

@@ -1,0 +1,8 @@
+_L1
+ifFalse b == 1 goto _L0
+_L2
+ifFalse c == 1 goto _L1
+a = 42
+goto _L2
+goto _L1
+_L0

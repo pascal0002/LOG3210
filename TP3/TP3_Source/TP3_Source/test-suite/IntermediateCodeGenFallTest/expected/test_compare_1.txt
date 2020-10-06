@@ -1,0 +1,8 @@
+_t0 = 1 + 2
+_t1 = 3 * 4
+ifFalse _t0 < _t1 goto _L1
+a = 1
+goto _L0
+_L1
+a = 0
+_L0

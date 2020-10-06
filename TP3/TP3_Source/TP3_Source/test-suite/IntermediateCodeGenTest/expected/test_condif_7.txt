@@ -1,0 +1,29 @@
+if b == 1 goto _L3
+goto _L2
+_L3
+if d == 1 goto _L1
+goto _L2
+_L1
+a = 42
+_L4
+if d == 1 goto _L6
+goto _L8
+_L8
+goto _L7
+_L6
+_t0 = a + 100
+a = _t0
+goto _L5
+_L7
+_t1 = a - 100
+a = _t1
+_L5
+_t2 = 1 + 2
+c = _t2
+goto _L0
+_L2
+a = 3210
+_L9
+_t3 = a * 4
+c = _t3
+_L0

@@ -1,0 +1,8 @@
+Declaration
+ num a;
+EndDeclaration
+
+a = 10;
+while(false) {
+    a = a - 1;
+}

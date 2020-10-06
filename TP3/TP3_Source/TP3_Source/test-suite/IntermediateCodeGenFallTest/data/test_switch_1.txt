@@ -1,0 +1,8 @@
+Declaration
+ num a;
+ num b;
+EndDeclaration
+
+switch (b) {
+    case 0 : a = 0;
+}

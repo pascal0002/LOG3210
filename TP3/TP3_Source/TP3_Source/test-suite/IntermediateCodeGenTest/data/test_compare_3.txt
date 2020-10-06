@@ -1,0 +1,7 @@
+Declaration
+bool a;
+num b;
+num c;
+EndDeclaration
+
+a = b >= -c;

@@ -1,0 +1,12 @@
+Declaration
+ num a;
+ num b;
+ num c;
+EndDeclaration
+
+switch (b) {
+    case 0 : a = 0;
+    case 1 : a = 1;
+    case c : a = 2;
+    default : a = 3;
+}

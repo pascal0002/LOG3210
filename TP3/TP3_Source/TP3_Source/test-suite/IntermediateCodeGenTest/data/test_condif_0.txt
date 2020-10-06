@@ -1,0 +1,6 @@
+Declaration
+num a;
+EndDeclaration
+
+if(true)
+  a = 42;

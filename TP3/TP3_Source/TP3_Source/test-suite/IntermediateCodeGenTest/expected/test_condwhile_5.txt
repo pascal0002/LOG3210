@@ -1,0 +1,19 @@
+d = 1
+_L1
+_L2
+if b == 1 goto _L3
+goto _L0
+_L3
+_t0 = d + 1
+d = _t0
+_L4
+_L5
+if c == 1 goto _L7
+goto _L2
+_L7
+goto _L6
+_L6
+a = 42
+goto _L5
+goto _L2
+_L0

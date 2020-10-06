@@ -1,0 +1,13 @@
+Declaration
+num a;
+num b;
+bool c;
+num d;
+EndDeclaration
+
+a = d;
+while(!c) {
+  a = a + 42;
+  b = 1 / 3 + 5;
+}
+b = a;    
