@@ -4,6 +4,7 @@ import analyzer.ast.*;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import sun.awt.Symbol;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.text.StyledEditorKit;
 import java.awt.*;
@@ -114,9 +115,26 @@ public class IntermediateCodeGenVisitor implements ParserVisitor {
      */
     @Override
     public Object visit(ASTIfStmt node, Object data) {
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
+        if (node.jjtGetNumChildren() == 2) {
+            BoolLabel bl = new BoolLabel(genLabel(), (String)data);
+
+            node.jjtGetChild(0).jjtAccept(this, bl);
+            m_writer.println(bl.lTrue);
+            node.jjtGetChild(1).jjtAccept(this, data);
         }
+        else if (node.jjtGetNumChildren() == 3) {
+            BoolLabel bl = new BoolLabel(genLabel(), genLabel());
+            node.jjtGetChild(0).jjtAccept(this, bl);
+            m_writer.println(bl.lTrue);
+            node.jjtGetChild(1).jjtAccept(this, data);
+            m_writer.println("goto " + data);
+            m_writer.println(bl.lFalse);
+            node.jjtGetChild(2).jjtAccept(this, data);
+        }
+        else {
+            throw new NotImplementedException();
+        }
+
         return null;
     }
 
