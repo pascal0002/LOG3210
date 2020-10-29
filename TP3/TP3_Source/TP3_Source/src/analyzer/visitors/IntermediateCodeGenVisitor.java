@@ -151,8 +151,8 @@ public class IntermediateCodeGenVisitor implements ParserVisitor {
         String tmp = "";
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             if (i % 2 == 0) {
-                String res = (String)node.jjtGetChild(i).jjtAccept(this, data);
                 addr = genId();
+                String res = (String)node.jjtGetChild(i).jjtAccept(this, data);
                 tmp += addr + " = " + res;
             }
             else {
