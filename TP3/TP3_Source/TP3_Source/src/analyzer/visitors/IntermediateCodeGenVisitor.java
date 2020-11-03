@@ -370,34 +370,40 @@ public class IntermediateCodeGenVisitor implements ParserVisitor {
         m_writer.println("goto " + begin);
 
         String switchVar = (String)node.jjtGetChild(0).jjtAccept(this, data);
+        String[] labels = new String[node.jjtGetNumChildren()];
+        String[] caseVars = new String[node.jjtGetNumChildren()];
 
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-            m_writer.println(genLabel());
-            node.jjtGetChild(i).jjtAccept(this, data);
+            String newLabel = genLabel();
+            labels[i] = newLabel;
+            m_writer.println(newLabel);
+            caseVars[i] = (String)node.jjtGetChild(i).jjtAccept(this, data);
             m_writer.println("goto " + data);
         }
 
-
-        //BoolLabel bl = new BoolLabel(genLabel(), (String)data);
-        //node.jjtGetChild(0).jjtAccept(this, bl);
-
+        m_writer.println(begin);
+        for (int i = 1; i < node.jjtGetNumChildren() - 1; i++) {
+            m_writer.println("if " + switchVar + " == " + caseVars[i] + " goto " + labels[i]);
+        }
+        if (node.jjtGetNumChildren() == 2) {
+            m_writer.println("if " + switchVar + " == " + caseVars[1] + " goto " + labels[1]);
+        } else {
+            m_writer.println("goto " + labels[node.jjtGetNumChildren() - 1]);
+        }
 
         return null;
     }
 
     @Override
     public Object visit(ASTCaseStmt node, Object data) {
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
-        }
-        return null;
+        String value = (String)node.jjtGetChild(0).jjtAccept(this, data);
+        node.jjtGetChild(1).jjtAccept(this, data);
+        return value;
     }
 
     @Override
     public Object visit(ASTDefaultStmt node, Object data) {
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            node.jjtGetChild(i).jjtAccept(this, data);
-        }
+        node.jjtGetChild(0).jjtAccept(this, data);
         return null;
     }
 
