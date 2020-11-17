@@ -41,6 +41,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         compute_NextUse();   // Next-Use computation from the backward visit of CODE
         print_machineCode(); // generate the machine code from the forward visit of CODE
 
+
         return null;
     }
 
@@ -82,6 +83,8 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
 
         // TODO: Modify CODE to add the needed MachLine.
         //       here the type of Assignment is "assigned = left op right"
+        CODE.add(new MachLine(op, assign, left, right));
+
         return null;
     }
 
@@ -95,6 +98,7 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         // TODO: Modify CODE to add the needed MachLine.
         //       here the type of Assignment is "assigned = - right"
         //       suppose the left part to be the constant #O
+        CODE.add(new MachLine("-", assign, "#", right));
 
         return null;
     }
@@ -109,6 +113,9 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         // TODO: Modify CODE to add the needed MachLine.
         //       here the type of Assignment is "assigned = right"
         //       suppose the left part to be the constant #O
+
+        CODE.add(new MachLine("+", assign, "#0", right));
+
         return null;
     }
 
@@ -216,10 +223,35 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
 
     private void compute_LifeVar() {
         // TODO: Implement LifeVariable algorithm on the CODE array (for basic bloc)
+        CODE.get(CODE.size() - 1).Life_OUT = new HashSet<>(RETURNED);
+
+        for (int i = CODE.size() - 1; i >= 0; i--) {
+            if (i < CODE.size() - 1) {
+                CODE.get(i).Life_OUT =  CODE.get(i + 1).Life_IN;
+            }
+
+            CODE.get(i).Life_IN = new HashSet<>(CODE.get(i).Life_OUT);
+            CODE.get(i).Life_IN.removeAll(CODE.get(i).DEF);
+            CODE.get(i).Life_IN.addAll(CODE.get(i).REF);
+        }
     }
 
     private void compute_NextUse() {
         // TODO: Implement NextUse algorithm on the CODE array (for basic bloc)
+        for (int i = CODE.size() - 1; i >= 0; i--) {
+            if (i < CODE.size() - 1) {
+                CODE.get(i).Next_OUT = (NextUse) CODE.get(i + 1).Next_IN.clone();
+            }
+            for (Map.Entry<String, ArrayList<Integer>> entry: CODE.get(i).Next_OUT.nextuse.entrySet()) {
+                if (!CODE.get(i).DEF.contains(entry.getKey())) {
+                    CODE.get(i).Next_IN.nextuse.put(entry.getKey(),(ArrayList<Integer>) entry.getValue().clone());
+                }
+            }
+
+            for (String ref : CODE.get(i).REF) {
+                CODE.get(i).Next_IN.add(ref, i);
+            }
+        }
     }
 
 
