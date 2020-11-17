@@ -1,0 +1,14 @@
+NUMBER_OF_REGISTER_AVAILABLE: 5
+
+t0 = b + a
+t1 = d * t0
+t2 = c * b
+t3 = t1 + t2
+t = t3
+t4 = d * b
+t5 = c * a
+t6 = t4 + t5
+a = t6
+b = t
+
+return a,b,c,d,i

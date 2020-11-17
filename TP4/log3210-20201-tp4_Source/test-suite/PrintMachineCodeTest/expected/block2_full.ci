@@ -1,0 +1,83 @@
+// Step 0
+LD R0, c
+MUL R1, #2, R0
+// Life_IN  : [a, b, c, d, i]
+// Life_OUT : [a, b, c, d, i, t0]
+// Next_IN  : c:[0, 4], d:[1, 2, 5], i:[9]
+// Next_OUT : c:[4], d:[1, 2, 5], i:[9], t0:[1]
+
+// Step 1
+LD R2, d
+ADD R3, R1, R2
+// Life_IN  : [a, b, c, d, i, t0]
+// Life_OUT : [a, b, c, d, i, t1]
+// Next_IN  : c:[4], d:[1, 2, 5], i:[9], t0:[1]
+// Next_OUT : c:[4], d:[2, 5], i:[9], t1:[2]
+
+// Step 2
+MUL R4, R2, R3
+// Life_IN  : [a, b, c, d, i, t1]
+// Life_OUT : [a, b, c, d, i, t2]
+// Next_IN  : c:[4], d:[2, 5], i:[9], t1:[2]
+// Next_OUT : c:[4], d:[5], i:[9], t2:[3]
+
+// Step 3
+ADD R5, #0, R4
+// Life_IN  : [a, b, c, d, i, t2]
+// Life_OUT : [a, b, c, t, d, i]
+// Next_IN  : c:[4], d:[5], i:[9], t2:[3]
+// Next_OUT : c:[4], d:[5], i:[9], t:[8]
+
+// Step 4
+MUL R6, R0, R0
+// Life_IN  : [a, b, c, t, d, i]
+// Life_OUT : [a, b, t, d, i, t3]
+// Next_IN  : c:[4], d:[5], i:[9], t:[8]
+// Next_OUT : d:[5], i:[9], t:[8], t3:[6]
+
+// Step 5
+MUL R7, R2, R2
+// Life_IN  : [a, b, t, d, i, t3]
+// Life_OUT : [t4, a, b, t, i, t3]
+// Next_IN  : d:[5], i:[9], t:[8], t3:[6]
+// Next_OUT : i:[9], t:[8], t3:[6], t4:[6]
+
+// Step 6
+ADD R8, R6, R7
+// Life_IN  : [t4, a, b, t, i, t3]
+// Life_OUT : [a, t5, b, t, i]
+// Next_IN  : i:[9], t:[8], t3:[6], t4:[6]
+// Next_OUT : i:[9], t:[8], t5:[7]
+
+// Step 7
+ADD R0, #0, R8
+// Life_IN  : [a, t5, b, t, i]
+// Life_OUT : [a, b, c, t, i]
+// Next_IN  : i:[9], t:[8], t5:[7]
+// Next_OUT : i:[9], t:[8]
+
+// Step 8
+ADD R2, #0, R5
+// Life_IN  : [a, b, c, t, i]
+// Life_OUT : [a, b, c, d, i]
+// Next_IN  : i:[9], t:[8]
+// Next_OUT : i:[9]
+
+// Step 9
+LD R9, i
+DIV R10, R9, #2
+// Life_IN  : [a, b, c, d, i]
+// Life_OUT : [a, b, t6, c, d]
+// Next_IN  : i:[9]
+// Next_OUT : t6:[10]
+
+// Step 10
+ADD R9, #0, R10
+// Life_IN  : [a, b, t6, c, d]
+// Life_OUT : [a, b, c, d, i]
+// Next_IN  : t6:[10]
+// Next_OUT : 
+
+ST c, R0
+ST d, R2
+ST i, R9

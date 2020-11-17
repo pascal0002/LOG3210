@@ -1,0 +1,168 @@
+options {
+    JAVA_UNICODE_ESCAPE = true;
+    STATIC = false;
+    MULTI = true;
+    VISITOR = true;
+    NODE_USES_PARSER = true;
+}
+
+PARSER_BEGIN(Parser)
+
+package analyzer.ast;
+
+public class Parser
+{
+    public static ASTProgram ParseTree(java.io.InputStream input) throws ParseException
+    {
+        Parser exo = new Parser(input);
+        return exo.Program();
+    }
+}
+
+PARSER_END(Parser)
+
+
+//
+// ANALYSE LEXICALE
+//
+
+// Sauter les blancs
+SKIP :
+{
+    < ( " " | "\t" | "\n" | "\r" )+	>
+}
+
+// Commentaires
+MORE :
+{
+    "//" : IN_SINGLE_LINE_COMMENT |
+    <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT |
+    "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_FORMAL_COMMENT>
+SPECIAL_TOKEN :
+{
+  <FORMAL_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+// Mots-clés
+TOKEN :
+{
+    <BEGIN_LIVE: "LIVE --->"> |
+    <END_LIVE: "<--- LIVE"> |
+    <NODE: "NODE"> |
+    <IN:  "IN:"> |
+    <OUT: "OUT:">|
+	< RETURN : "return"> |
+	<REGISTER: "NUMBER_OF_REGISTER_AVAILABLE:">
+}
+
+// Opérateurs
+TOKEN :
+{
+    <ASSIGN: <EQUAL> > |
+    < OPERATOR: <PLUS> | <MINUS> | <TIMES> | <DIV> > |
+    < UNARY_MINUS: "minus" > |
+    < COMMA: "," > |
+    < #PLUS:  "+" > |
+    < #MINUS: "-" > |
+    < #TIMES: "*" > |
+    < #DIV:   "/" > |
+
+    < #EQUAL: "=" >
+}
+
+// Identificateurs et nombres
+TOKEN :
+{
+    < IDENTIFIER: <LETTER> ( <LETTER> | <DIGIT> )* > |
+    < #LETTER: ["a"-"z","A"-"Z","_"] > |
+    < #DIGIT: ["0"-"9"] > |
+    < INTEGER: ["1"-"9"] (["0"-"9"])* | "0" >
+}
+
+
+//
+// ANALYSE SYNTAXIQUE
+//
+
+ASTProgram Program() : { }
+{
+    NumberRegister()
+    Block()
+    ReturnStmt()
+    <EOF> { return jjtThis;  }
+}
+
+
+void NumberRegister() : { }
+{
+<REGISTER> IntValue()
+}
+
+void ReturnStmt() : {Token t;}
+{
+    <RETURN> [Identifier() (<COMMA> Identifier())*]
+}
+
+void Block() : { }
+{
+    ( Stmt() )*
+}
+
+void Stmt() : { }
+{
+    LOOKAHEAD(4) AssignStmt() |
+    LOOKAHEAD(4) AssignUnaryStmt() |
+    LOOKAHEAD(4) AssignDirectStmt()
+}
+
+void AssignStmt() : { Token t; }
+{
+    Identifier() <ASSIGN> Expr() t = <OPERATOR> { jjtThis.setOp(t.image); } Expr()
+}
+
+void AssignUnaryStmt() : { }
+{
+    Identifier() <ASSIGN> <UNARY_MINUS> Expr()
+}
+
+void AssignDirectStmt() : { }
+{
+    Identifier() <ASSIGN> Expr()
+}
+
+void Expr() : { }
+{
+    Identifier() |
+    IntValue()
+}
+
+void Identifier() : { Token t; }
+{
+    t = <IDENTIFIER> { jjtThis.setValue(t.image); }
+}
+
+void IntValue() : { Token t; }
+{
+    t = <INTEGER> { jjtThis.setValue(Integer.parseInt(t.image)); }
+}

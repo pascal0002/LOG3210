@@ -1,0 +1,62 @@
+# Root of the grammar is program
+
+# **************************************************
+#              Syntax Analysis
+# **************************************************
+
+# The instructions are separated by an end of line
+program = (instruction EOL?)* EOF
+
+# An instruction can start with a label and may be one of the following operations
+instruction = label_marker?
+    ( load_operation
+    / store_operation
+    / computation_operation
+    / unconditional_jump_operation
+    / conditional_jump_operation
+    / print_operation
+    / input_operation
+    / clear_operation)?
+
+# Rules of the different operations
+load_operation = load_operator register arg_separator (register / memory / constant)
+store_operation = store_operator memory arg_separator (register / constant)
+computation_operation = binary_computation_operation / unary_computation_operation
+unconditional_jump_operation = unconditional_jump_operator identifier
+conditional_jump_operation = conditional_jump_operator register arg_separator identifier
+print_operation = print_operator (string / register / memory / constant)
+input_operation = input_operator (register / memory)
+clear_operation = clear_operator
+
+binary_computation_operation = binary_operator register arg_separator (register / constant) arg_separator (register / constant)
+unary_computation_operation = unary_operator (register / constant)
+
+#  Stuff for address logic
+memory = "*"? (identifier / number) ("(" register ")")?
+constant = "#" number
+register = "R" number
+label_marker = identifier ":"
+comment = "//" r'.*'
+
+# **************************************************
+#              Lexical Analysis
+# **************************************************
+
+# List of operators
+load_operator = "LD"
+store_operator = "ST"
+binary_operator = "ADD" / "SUB" / "MUL" / "DIV" / "MOD"
+unary_operator = "INC" / "DEC"
+unconditional_jump_operator = "BR"
+conditional_jump_operator = "BGTZ" / "BGETZ" /"BLTZ" / "BLETZ" / "BETZ" / "BNETZ"
+print_operator = "PRINT"
+input_operator = "INPUT"
+clear_operator = "CLEAR"
+
+# List of other useful tokens
+identifier = r'[a-zA-Z][a-zA-Z0-9]*'
+number = r'[0-9]+'
+EOL = '\n'
+arg_separator = ", "
+empty = r'^$'
+string = '"' r'(("")|([^"]))+' '"'
