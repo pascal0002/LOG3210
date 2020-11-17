@@ -264,8 +264,14 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         // /!\ TODO this function should generate the LD and ST when needed
 
         // TODO: if var is a constant (starts with '#'), return var
+        if (var.startsWith("#")) {
+            return var;
+        }
 
         // TODO: if REGISTERS contains var, return "R"+index
+        if (REGISTERS.contains(var)) {
+           // return "R" + var;
+        }
 
         // TODO: if REGISTERS size is not max (<REG), add var to REGISTERS and return "R"+index
 
