@@ -30,23 +30,26 @@ def out_file(s):
 s = "Test without register limitation"
 print("-" * len(s) + '\n' + s +'\n' + "-" * len(s))
 out_file("full")
-os.system("python3 run_tests.py 256")
+os.system("python run_tests.py 256")
 
 # Marche avec Contrainte 3 registres (3 points)
 s = "Test with 3 registers limitation"
 print("-" * len(s) + '\n' + s +'\n' + "-" * len(s))
 out_file(3)
-os.system("python3 run_tests.py 3")
+os.system("python run_tests.py 3")
 
 # Marche avec Contrainte 5 registres (3 points)
 s = "Test with 5 registers limitation"
 print("-" * len(s) + '\n' + s +'\n' + "-" * len(s))
 out_file(5)
-os.system("python3 run_tests.py 5")
+os.system("python run_tests.py 5")
 
 
-# Marche avec Contrainte 5 registres (3 points)
+# Marche avec Contrainte 11 registres (3 points)
 s = "Test with 5 registers limitation"
 print("-" * len(s) + '\n' + s +'\n' + "-" * len(s))
-out_file(11)
-os.system("python3 run_tests.py 11")
+out_file("full")
+os.system("python run_tests.py 11")
+
+
+

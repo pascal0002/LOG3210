@@ -1,6 +1,7 @@
 package analyzer.visitors;
 
 import analyzer.ast.*;
+import com.sun.org.apache.regexp.internal.RE;
 
 import java.io.PrintWriter;
 import java.util.*;
@@ -260,6 +261,8 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     // The assignation is done with respect to the life and next information.
     // The boolean load_if_not_found indicates if the variable needs to be loaded
     // from the memory to be accessible in REGISTERS
+
+    // Load if not found -> a = b + c dont need to load a, just do ADD a, b,c
     public String choose_register(String var, HashSet<String> life, NextUse next, boolean load_if_not_found) {
         // /!\ TODO this function should generate the LD and ST when needed
 
@@ -270,25 +273,81 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
 
         // TODO: if REGISTERS contains var, return "R"+index
         if (REGISTERS.contains(var)) {
-           // return "R" + var;
+            return "R" + REGISTERS.indexOf(var);
         }
 
         // TODO: if REGISTERS size is not max (<REG), add var to REGISTERS and return "R"+index
+        if (REGISTERS.size() < REG) {
+            REGISTERS.add(var);
+            if (load_if_not_found) {
+                String output = "LD " + "R" + (REGISTERS.size() - 1) + ", " + var;
+                m_writer.println(output); //TODO: Remove this
+            }
+
+            return "R" + (REGISTERS.size() - 1);
+        }
 
         // TODO: if REGISTERS has max size,
         //          put var in space of an other variable which is not used anymore
         //          or
         //          put var in space of var which as the largest next-use
 
-        return null;
+        else {
+
+            int maxLineNextUse = -1;
+            String maxVarNextUser = "";
+
+            for (String v : REGISTERS) {
+                if (!next.nextuse.containsKey(v)) {
+                    maxVarNextUser = v;
+                    break;
+                }
+                if (next.nextuse.get(v).get(0) > maxLineNextUse) {
+                    maxLineNextUse = next.nextuse.get(v).get(0);
+                    maxVarNextUser = v;
+                }
+            }
+
+            int idxElementToReplace = REGISTERS.indexOf(maxVarNextUser);
+
+            // Use LIFE_IN if var is operand (a,b) else if var isnt operant, use LIFE_OUT (c) Ex c = a + b
+            if (MODIFIED.contains(maxVarNextUser) && life.contains(maxVarNextUser)) {
+                // if operand load if not found is false?
+                String output = "ST " + maxVarNextUser + ", R" + idxElementToReplace;
+                m_writer.println(output);
+            }
+
+            if (load_if_not_found) {
+                String output = "LD " + "R" + idxElementToReplace + ", " + var;
+                m_writer.println(output); //TODO: Remove this
+            }
+
+            REGISTERS.set(idxElementToReplace, var);
+
+            return "R" + (idxElementToReplace);
+        }
     }
 
     public void print_machineCode() {
         // TODO: Print the machine code (this function needs to be change)
         for (int i = 0; i < CODE.size(); i++) { // print the output
             m_writer.println("// Step " + i);
-
+            String leftReg = choose_register(CODE.get(i).LEFT, CODE.get(i).Life_IN, CODE.get(i).Next_IN, true);
+            String rightReg = choose_register(CODE.get(i).RIGHT, CODE.get(i).Life_IN, CODE.get(i).Next_IN, true);
+            String assignReg = choose_register(CODE.get(i).ASSIGN, CODE.get(i).Life_OUT, CODE.get(i).Next_OUT, false);
+            MODIFIED.add(CODE.get(i).ASSIGN);
+            //if (leftReg != "#0" && rightReg != "#0") {
+                String output = CODE.get(i).OP + " " + assignReg + ", " + leftReg + ", " + rightReg; //TODO: Remove this
+                m_writer.println(output);
+            //}
             m_writer.println(CODE.get(i));
+        }
+
+        // Maybe change the order of this?
+        for (String ret: RETURNED) {
+            if (REGISTERS.contains(ret) && MODIFIED.contains(ret)) {
+                m_writer.println("ST " + ret + ", R" + REGISTERS.indexOf(ret));
+            }
         }
     }
 
