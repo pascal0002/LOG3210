@@ -82,8 +82,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         String right  = (String) node.jjtGetChild(2).jjtAccept(this, null);
         String op     = node.getOp();
 
-        // TODO: Modify CODE to add the needed MachLine.
-        //       here the type of Assignment is "assigned = left op right"
         CODE.add(new MachLine(op, assign, left, right));
 
         return null;
@@ -96,9 +94,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         String assign = (String) node.jjtGetChild(0).jjtAccept(this, null);
         String right  = (String) node.jjtGetChild(1).jjtAccept(this, null);
 
-        // TODO: Modify CODE to add the needed MachLine.
-        //       here the type of Assignment is "assigned = - right"
-        //       suppose the left part to be the constant #O
         CODE.add(new MachLine("-", assign, "#", right));
 
         return null;
@@ -110,10 +105,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         // On n'a rien a transférer aux enfants
         String assign = (String) node.jjtGetChild(0).jjtAccept(this, null);
         String right  = (String) node.jjtGetChild(1).jjtAccept(this, null);
-
-        // TODO: Modify CODE to add the needed MachLine.
-        //       here the type of Assignment is "assigned = right"
-        //       suppose the left part to be the constant #O
 
         CODE.add(new MachLine("+", assign, "#0", right));
 
@@ -223,7 +214,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     }
 
     private void compute_LifeVar() {
-        // TODO: Implement LifeVariable algorithm on the CODE array (for basic bloc)
         CODE.get(CODE.size() - 1).Life_OUT = new HashSet<>(RETURNED);
 
         for (int i = CODE.size() - 1; i >= 0; i--) {
@@ -238,7 +228,6 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     }
 
     private void compute_NextUse() {
-        // TODO: Implement NextUse algorithm on the CODE array (for basic bloc)
         for (int i = CODE.size() - 1; i >= 0; i--) {
             if (i < CODE.size() - 1) {
                 CODE.get(i).Next_OUT = (NextUse) CODE.get(i + 1).Next_IN.clone();
@@ -262,41 +251,32 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     // The boolean load_if_not_found indicates if the variable needs to be loaded
     // from the memory to be accessible in REGISTERS
 
+    // Notes:
     // Load if not found -> a = b + c dont need to load a, just do ADD a, b,c
+    // Use LIFE_IN if var is operand (a,b) else if var isnt operant, use LIFE_OUT (c) Ex c = a + b
     public String choose_register(String var, HashSet<String> life, NextUse next, boolean load_if_not_found) {
-        // /!\ TODO this function should generate the LD and ST when needed
-
-        // TODO: if var is a constant (starts with '#'), return var
+        // If it's a constant dont use registers
         if (var.startsWith("#")) {
             return var;
         }
 
-        // TODO: if REGISTERS contains var, return "R"+index
         if (REGISTERS.contains(var)) {
             return "R" + REGISTERS.indexOf(var);
         }
 
-        // TODO: if REGISTERS size is not max (<REG), add var to REGISTERS and return "R"+index
         if (REGISTERS.size() < REG) {
             REGISTERS.add(var);
             if (load_if_not_found) {
-                String output = "LD " + "R" + (REGISTERS.size() - 1) + ", " + var;
-                m_writer.println(output); //TODO: Remove this
+                m_writer.println("LD " + "R" + (REGISTERS.size() - 1) + ", " + var);
             }
 
             return "R" + (REGISTERS.size() - 1);
         }
-
-        // TODO: if REGISTERS has max size,
-        //          put var in space of an other variable which is not used anymore
-        //          or
-        //          put var in space of var which as the largest next-use
-
         else {
-
             int maxLineNextUse = -1;
             String maxVarNextUser = "";
 
+            // Find the register to replace
             for (String v : REGISTERS) {
                 if (!next.nextuse.containsKey(v)) {
                     maxVarNextUser = v;
@@ -310,18 +290,14 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
 
             int idxElementToReplace = REGISTERS.indexOf(maxVarNextUser);
 
-            // Use LIFE_IN if var is operand (a,b) else if var isnt operant, use LIFE_OUT (c) Ex c = a + b
+            // Use ST if modified and is in life in/out
             if (MODIFIED.contains(maxVarNextUser) && life.contains(maxVarNextUser)) {
-                // if operand load if not found is false?
-                String output = "ST " + maxVarNextUser + ", R" + idxElementToReplace;
-                m_writer.println(output);
+                m_writer.println("ST " + maxVarNextUser + ", R" + idxElementToReplace);
             }
 
             if (load_if_not_found) {
-                String output = "LD " + "R" + idxElementToReplace + ", " + var;
-                m_writer.println(output); //TODO: Remove this
+                m_writer.println("LD " + "R" + idxElementToReplace + ", " + var);
             }
-
             REGISTERS.set(idxElementToReplace, var);
 
             return "R" + (idxElementToReplace);
@@ -329,21 +305,17 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
     }
 
     public void print_machineCode() {
-        // TODO: Print the machine code (this function needs to be change)
         for (int i = 0; i < CODE.size(); i++) { // print the output
             m_writer.println("// Step " + i);
             String leftReg = choose_register(CODE.get(i).LEFT, CODE.get(i).Life_IN, CODE.get(i).Next_IN, true);
             String rightReg = choose_register(CODE.get(i).RIGHT, CODE.get(i).Life_IN, CODE.get(i).Next_IN, true);
             String assignReg = choose_register(CODE.get(i).ASSIGN, CODE.get(i).Life_OUT, CODE.get(i).Next_OUT, false);
             MODIFIED.add(CODE.get(i).ASSIGN);
-            //if (leftReg != "#0" && rightReg != "#0") {
-                String output = CODE.get(i).OP + " " + assignReg + ", " + leftReg + ", " + rightReg; //TODO: Remove this
-                m_writer.println(output);
-            //}
+            m_writer.println(CODE.get(i).OP + " " + assignReg + ", " + leftReg + ", " + rightReg);
             m_writer.println(CODE.get(i));
         }
 
-        // Maybe change the order of this?
+        // Handle return
         for (String ret: RETURNED) {
             if (REGISTERS.contains(ret) && MODIFIED.contains(ret)) {
                 m_writer.println("ST " + ret + ", R" + REGISTERS.indexOf(ret));
@@ -358,6 +330,4 @@ public class PrintMachineCodeVisitor implements ParserVisitor {
         Collections.sort(list);
         return list;
     }
-
-    // TODO: add any class you judge necessary, and explain them in the report. GOOD LUCK!
 }
